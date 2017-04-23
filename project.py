@@ -27,8 +27,13 @@ goalCoordinateX = float(goalCoordinateX)
 goalCoordinateY = float(goalCoordinateY)
 
 
-MAN_WEIGHT = 0.5
-EUC_WEIGHT = 1 - MAN_WEIGHT
+MAN_WEIGHT = 0
+EUC_WEIGHT = 0
+EUC_SQUARE_WEIGHT = 0
+DIAG_WEIGHT = 0
+
+if MAN_WEIGHT + EUC_WEIGHT + EUC_SQUARE_WEIGHT + DIAG_WEIGHT != 1:
+	exit()
 
 def euc_heuristics(vertices):
 
@@ -43,6 +48,22 @@ def man_heuristics(vertices):
 	x = float(x)
 	y = float(y)
 	return abs(x-goalCoordinateX) + abs(y-goalCoordinateY)
+
+def euc_square_heuristics(vertices):
+
+	x,y = coordList[vertices-1]
+	x = float(x)
+	y = float(y)
+	return (x-goalCoordinateX)*(x-goalCoordinateX)+(y-goalCoordinateY)*(y-goalCoordinateY)
+
+def diag_heuristics(vertices):
+
+	x,y = coordList[vertices-1]
+	x = float(x)
+	y = float(y)
+	dx = abs(x-goalCoordinateX)
+	dy = abs(y-goalCoordinateY)
+	return max(dx,dy)
 
 
 graph = []
@@ -66,7 +87,9 @@ tempCostList = []
 
 while True:	
 	for vertices in openList:
-		tempCostList.append((vertices, cost[vertices] +  (MAN_WEIGHT * man_heuristics(vertices) + EUC_WEIGHT * euc_heuristics(vertices))))
+		tempCostList.append((vertices, cost[vertices] + 
+							(MAN_WEIGHT * man_heuristics(vertices) + EUC_WEIGHT * euc_heuristics(vertices))+ 
+							(DIAG_WEIGHT * diag_heuristics(vertices) + EUC_SQUARE_WEIGHT * euc_square_heuristics(vertices))))
 	#print tempCostList
 	minCostVertex,minCost = min(tempCostList, key = lambda t: t[1])
 	tempCostList[:] = []
