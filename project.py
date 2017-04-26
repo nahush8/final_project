@@ -107,52 +107,50 @@ DIAG_WEIGHT = 0
 EUC_SQUARE_WEIGHT = 0
 
 
-l1 = np.arange(0,1,0.1)
-l2 = np.arange(0,1,0.1)
+l1 = np.arange(0,1,0.01)
 for i1 in l1:
-	for i2 in l2:
-		MAN_WEIGHT = i1
-		EUC_SQUARE_WEIGHT = i2
+	MAN_WEIGHT = i1
+	EUC_WEIGHT = 1 - MAN_WEIGHT
 
-		openList = []
-		closedList = []
-		cost = [float("inf")] * (numOfVertices+1)
-		cost[startingVertex] = 0
-		openList.append(startingVertex)
-		tempCostList = []
-		while True:	
-			for vertices in openList:
-				tempCostList.append((vertices, cost[vertices] + 
-									(MAN_WEIGHT * man_heuristics(vertices) + EUC_SQUARE_WEIGHT * euc_square_heuristics(vertices))))#+ 
-									#(DIAG_WEIGHT * diag_heuristics(vertices) + EUC_SQUARE_WEIGHT * euc_square_heuristics(vertices))))
-			#print tempCostList
-			minCostVertex,minCost = min(tempCostList, key = lambda t: t[1])
-			tempCostList[:] = []
-			
-			del openList[openList.index(minCostVertex)]
-			closedList.append(minCostVertex)
-			
-			if minCostVertex == goalVertex:
-				break
-			
-			for i in range(1,numOfVertices+1):
-					if adj[minCostVertex][i] != -99:
-						if i not in closedList:
-							costNew = cost[minCostVertex] + adj[minCostVertex][i]
-							if cost[i] > costNew:
-								cost[i] = costNew
-								parent[i] = minCostVertex
-							if i not in openList:
-								openList.append(i)					
-			#print "open"
-			#print openList
-			#print "close"
-			#print closedList
-		#output = str(MAN_WEIGHT) + "\t" + str(EUC_WEIGHT) + "\t" + str(EUC_SQUARE_WEIGHT) + "\t" + str(DIAG_WEIGHT) + "\t\t" + str(len(closedList)) + "\n"
-		output = str(MAN_WEIGHT) + "\t" + str(EUC_SQUARE_WEIGHT) + "\t\t" + str(len(closedList)) + "\t\t" + str(cost[goalVertex]) + "\n"
-		print output
-		f.write(output)
-		f.flush()
+	openList = []
+	closedList = []
+	cost = [float("inf")] * (numOfVertices+1)
+	cost[startingVertex] = 0
+	openList.append(startingVertex)
+	tempCostList = []
+	while True:	
+		for vertices in openList:
+			tempCostList.append((vertices, cost[vertices] + 
+								(MAN_WEIGHT * man_heuristics(vertices) + EUC_WEIGHT * euc_heuristics(vertices))))#+ 
+								#(DIAG_WEIGHT * diag_heuristics(vertices) + EUC_SQUARE_WEIGHT * euc_square_heuristics(vertices))))
+		#print tempCostList
+		minCostVertex,minCost = min(tempCostList, key = lambda t: t[1])
+		tempCostList[:] = []
+		
+		del openList[openList.index(minCostVertex)]
+		closedList.append(minCostVertex)
+		
+		if minCostVertex == goalVertex:
+			break
+		
+		for i in range(1,numOfVertices+1):
+				if adj[minCostVertex][i] != -99:
+					if i not in closedList:
+						costNew = cost[minCostVertex] + adj[minCostVertex][i]
+						if cost[i] > costNew:
+							cost[i] = costNew
+							parent[i] = minCostVertex
+						if i not in openList:
+							openList.append(i)					
+		#print "open"
+		#print openList
+		#print "close"
+		#print closedList
+	#output = str(MAN_WEIGHT) + "\t" + str(EUC_WEIGHT) + "\t" + str(EUC_SQUARE_WEIGHT) + "\t" + str(DIAG_WEIGHT) + "\t\t" + str(len(closedList)) + "\n"
+	output = str(MAN_WEIGHT) + "\t" + str(EUC_WEIGHT) + "\t\t" + str(len(closedList)) + "\t\t" + str(cost[goalVertex]) + "\n"
+	print output
+	f.write(output)
+	f.flush()
 print "NUMBER OF ITERATIONS"
 #print len(closedList)
 #print cost[goalVertex]
